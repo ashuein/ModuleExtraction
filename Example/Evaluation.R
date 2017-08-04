@@ -1,4 +1,4 @@
-# Evaluation
+# mips_3_100.txt is from www.paccanarolab.org/static_content/clusterone/cl1_gold_standard.zip
 rlines=readLines('data/mips_3_100.txt')
 MIPS=vector("list", length(rlines))
 modsizeMIPS=c()
@@ -7,10 +7,9 @@ for (i in 1:length(rlines)) {
     modsizeMIPS = c(modsizeMIPS,length(MIPS[[i]]))
 }
 
-
+# CYC2008_complex.tab is from http://wodaklab.org/cyc2008/downloads
 rlines=read.delim('data/CYC2008_complex.tab')
 CYCcomplexlable = unique(rlines[,3])
-#CYC=list(length=length(CYCcomplexlable))
 CYC= vector("list", length(CYCcomplexlable))
 
 modsizeCYC=numeric(length=length(CYCcomplexlable))

@@ -10,6 +10,6 @@ Code structure
 
 Reference
 ==============
-Extracting active modules from multilayer PPI network: a continuous optimization approach. Submmited
+Extracting active modules from multilayer PPI network: a continuous optimization approach. In preparing.
 
 For any questions, please contact Dong Li at dxl466@cs.bham.ac.uk.
