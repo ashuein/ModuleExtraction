@@ -1,4 +1,4 @@
-%% FUNCTION MA
+%% FUNCTION ModuleExtract
 %   Continuous optimization for active modules identification in molecular interaction networks
 %
 %% INPUT

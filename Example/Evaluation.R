@@ -52,7 +52,7 @@ FScore <- function(A,B){
 	return (cbind(pre,rec,f))
 }
 
-
+# F-measure for each time point
 for (t in 1:12) {
 rlines=readLines(paste('PPI_complexes',t,'.txt',sep=''))
 PPIcomplexes=vector("list", length(rlines))
@@ -68,6 +68,7 @@ fp2=FScore(PPIcomplexes,MIPS)
 write.table(cbind(fp1,fp2),'stats.csv',row.names=paste('T',t,sep=''),col.names=F,sep=',',append=T)
 }
 
+# F-measure for consensus graph
 rlines=readLines('PPI_complexes.txt')
 PPIcomplexes=vector("list", length(rlines))
 modsize = c()
@@ -80,3 +81,38 @@ for (i in 1:length(rlines)) {
 fp1=FScore(PPIcomplexes,CYC)
 fp2=FScore(PPIcomplexes,MIPS)
 write.table(cbind(fp1,fp2),'stats.csv',row.names='Consensus',col.names=F,sep=',',append=T)
+
+# GO enrichment analysis
+library(STRINGdb)
+string_db <- STRINGdb$new( version="10", species=4932,
+    score_threshold=0, input_directory="" )
+library(xlsx)
+rlines=readLines('PPI_complexes.txt')
+modulegoscore = matrix(0,nrow=length(rlines),ncol=2)
+for (i in 1:length(rlines)) {
+    # save the modules gene lists
+    gsymbol=strsplit(rlines[i],'\t')[[1]]
+    modsize = c(modsize,length(gsymbol))
+
+    # access STRING
+    diff_exp_genes <- data.frame(gsymbol,gsymbol)
+    colnames(diff_exp_genes)<-c('gene','backup')
+    genes_mapped <- string_db$map(diff_exp_genes, "gene", removeUnmappedRows = TRUE )
+    hits <- genes_mapped$STRING_id
+    
+    er <- string_db$get_enrichment(hits)
+    er<-er[which(er$pvalue_fdr<0.05),]
+    modulegoscore[i,1]=dim(er)[1]
+    if (dim(er)[1] > 0){
+        write.xlsx(x = er, file = paste(fhead,"/EnrichmentBP.xlsx",sep=''),append = TRUE,
+        sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
+    }
+
+    er <- string_db$get_enrichment(hits)
+    er<-er[which(er$pvalue_fdr<0.05),]
+    modulegoscore[i,2]=dim(er)[1]
+    if (dim(er)[1] > 0){
+        write.xlsx(x = er, file = paste(fhead,"/EnrichmentBP.xlsx",sep=''),append = TRUE,
+        sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
+    }
+}
