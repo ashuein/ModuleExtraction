@@ -89,10 +89,11 @@ string_db <- STRINGdb$new( version="10", species=4932,
 library(xlsx)
 rlines=readLines('PPI_complexes.txt')
 modulegoscore = matrix(0,nrow=length(rlines),ncol=2)
+bphead=c('Biological Process',rep('',5))
+kegghead=c('KEGG Pathway',rep('',5))
 for (i in 1:length(rlines)) {
     # save the modules gene lists
     gsymbol=strsplit(rlines[i],'\t')[[1]]
-    modsize = c(modsize,length(gsymbol))
 
     # access STRING
     diff_exp_genes <- data.frame(gsymbol,gsymbol)
@@ -103,16 +104,12 @@ for (i in 1:length(rlines)) {
     er <- string_db$get_enrichment(hits)
     er<-er[which(er$pvalue_fdr<0.05),]
     modulegoscore[i,1]=dim(er)[1]
-    if (dim(er)[1] > 0){
-        write.xlsx(x = er, file = paste(fhead,"/EnrichmentBP.xlsx",sep=''),append = TRUE,
-        sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
-    }
 
-    er <- string_db$get_enrichment(hits)
-    er<-er[which(er$pvalue_fdr<0.05),]
-    modulegoscore[i,2]=dim(er)[1]
-    if (dim(er)[1] > 0){
-        write.xlsx(x = er, file = paste(fhead,"/EnrichmentBP.xlsx",sep=''),append = TRUE,
-        sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
+    er2 <- string_db$get_enrichment(hits,category = "KEGG")
+    er2<-er2[which(er$pvalue_fdr<0.05),]
+    modulegoscore[i,2]=dim(er2)[1]
+    if (dim(er)[1] > 0 || dim(er2)[1] > 0){
+        write.xlsx(x = rbind(bphead,er,kegghead,er2), file = paste(fhead,"/EnrichmentAll.xlsx",sep=''),append = TRUE,
+                sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
     }
 }
