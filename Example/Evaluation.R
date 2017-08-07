@@ -106,10 +106,11 @@ for (i in 1:length(rlines)) {
     modulegoscore[i,1]=dim(er)[1]
 
     er2 <- string_db$get_enrichment(hits,category = "KEGG")
-    er2<-er2[which(er$pvalue_fdr<0.05),]
+    er2<-er2[which(er2$pvalue_fdr<0.05),]
     modulegoscore[i,2]=dim(er2)[1]
     if (dim(er)[1] > 0 || dim(er2)[1] > 0){
-        write.xlsx(x = rbind(bphead,er,kegghead,er2), file = paste(fhead,"/EnrichmentAll.xlsx",sep=''),append = TRUE,
+        write.xlsx(x = rbind(bphead,er,kegghead,er2), file ="EnrichmentAll.xlsx",append = TRUE,
                 sheetName = paste('module',i,sep=''), row.names = FALSE, col.names=TRUE)
     }
+    print(paste("Finishing ",i,sep=''))
 }
